@@ -2,22 +2,25 @@
 #include "Utilities.h"
 #include <iostream>
 
-
-class WindowManager
+namespace Organizer
 {
-public:
-	WindowManager(const int aWidth, const int aHeight);
-	~WindowManager();
+	class WindowManager
+	{
+	public:
+		WindowManager(const int aWidth, const int aHeight);
+		~WindowManager();
 
-	bool Initialize();
+		bool Initialize();
 
-	GLFWwindow* GetWindow() const;
+		GLFWwindow* GetWindow() const;
 
-private:
-	int myWidth;
-	int myHeight;
+	private:
+		int myWidth;
+		int myHeight;
 
-	GLFWwindow* myWindow;
-};
+		GLFWwindow* myWindow;
+	};
+}
+
 
 

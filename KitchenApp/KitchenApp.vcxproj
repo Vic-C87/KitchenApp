@@ -162,6 +162,7 @@
     <ClCompile Include="src\ProductFactory.cpp" />
     <ClCompile Include="src\Recipe.cpp" />
     <ClCompile Include="src\Storage.cpp" />
+    <ClCompile Include="src\UIManager.cpp" />
     <ClCompile Include="src\WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -186,6 +187,7 @@
     <ClInclude Include="src\Recipe.h" />
     <ClInclude Include="src\stb_image.h" />
     <ClInclude Include="src\Storage.h" />
+    <ClInclude Include="src\UIManager.h" />
     <ClInclude Include="src\Utilities.h" />
     <ClInclude Include="src\WindowManager.h" />
   </ItemGroup>
