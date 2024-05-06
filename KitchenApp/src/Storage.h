@@ -1,5 +1,5 @@
 #pragma once
-#include "Ingredient.h"
+#include "ProductFactory.h"
 
 namespace Organizer
 {
@@ -10,14 +10,14 @@ namespace Organizer
 		~Storage();
 		
 		void Load();
-		bool Add(Ingredient aNewIngredient);
-		Ingredient* Search(const Product aProduct);
-		Ingredient* Search(const std::string aName);
-		Ingredient* Search(const unsigned int anID);
-		bool Modify(Ingredient& anIngredientToChange);
+		bool Add(Utilities::Ingredient aNewIngredient);
+		Utilities::Ingredient* Search(const Utilities::Product aProduct);
+		Utilities::Ingredient* Search(const std::string aName);
+		Utilities::Ingredient* Search(const unsigned int anID);
+		bool Modify(Utilities::Ingredient& anIngredientToChange);
 
 	private:
-		std::vector<Ingredient> myStock;
+		std::vector<Utilities::Ingredient> myStock;
 	};
 
 

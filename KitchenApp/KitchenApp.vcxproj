@@ -182,7 +182,6 @@
     <ClInclude Include="Include\KHR\khrplatform.h" />
     <ClInclude Include="src\CookBook.h" />
     <ClInclude Include="src\Ingredient.h" />
-    <ClInclude Include="src\Product.h" />
     <ClInclude Include="src\ProductFactory.h" />
     <ClInclude Include="src\Recipe.h" />
     <ClInclude Include="src\stb_image.h" />

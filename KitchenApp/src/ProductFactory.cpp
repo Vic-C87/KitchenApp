@@ -9,26 +9,31 @@ namespace Organizer
 	ProductFactory::~ProductFactory()
 	{
 	}
-	void ProductFactory::Load()
+	void ProductFactory::Load(std::vector<Utilities::Product> someProducts)
 	{
+		for (int i = 0; i < someProducts.size(); i++)
+		{
+			myProducts.push_back(someProducts[i]);
+		}
 	}
-	bool ProductFactory::Add(Product aNewProduct)
+	bool ProductFactory::Add(Utilities::Product aNewProduct)
+	{
+		myProducts.push_back(aNewProduct);
+		return true;
+	}
+	const Utilities::Product* ProductFactory::Search(const std::string aName) const
+	{
+		return nullptr;
+	}
+	const Utilities::Product* ProductFactory::Search(const unsigned int anID) const
+	{
+		return nullptr;
+	}
+	bool ProductFactory::Modify(const std::string aNamedProductToChange, Utilities::Product aNewProduct)
 	{
 		return false;
 	}
-	const Product ProductFactory::Search(const std::string aName) const
-	{
-		return Product();
-	}
-	const Product ProductFactory::Search(const unsigned int anID) const
-	{
-		return Product();
-	}
-	bool ProductFactory::Modify(const std::string aNamedProductToChange, Product aNewProduct)
-	{
-		return false;
-	}
-	bool ProductFactory::Modify(unsigned int anIDedProductToChange, Product aNewProduct)
+	bool ProductFactory::Modify(unsigned int anIDedProductToChange, Utilities::Product aNewProduct)
 	{
 		return false;
 	}

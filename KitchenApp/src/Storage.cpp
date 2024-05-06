@@ -12,23 +12,23 @@ namespace Organizer
 	void Storage::Load()
 	{
 	}
-	bool Storage::Add(Ingredient aNewIngredient)
+	bool Storage::Add(Utilities::Ingredient aNewIngredient)
 	{
 		return false;
 	}
-	Ingredient* Storage::Search(const Product aProduct)
+	Utilities::Ingredient* Storage::Search(const Utilities::Product aProduct)
 	{
 		return nullptr;
 	}
-	Ingredient* Storage::Search(const std::string aName)
+	Utilities::Ingredient* Storage::Search(const std::string aName)
 	{
 		return nullptr;
 	}
-	Ingredient* Storage::Search(const unsigned int anID)
+	Utilities::Ingredient* Storage::Search(const unsigned int anID)
 	{
 		return nullptr;
 	}
-	bool Storage::Modify(Ingredient& anIngredientToChange)
+	bool Storage::Modify(Utilities::Ingredient& anIngredientToChange)
 	{
 		return false;
 	}

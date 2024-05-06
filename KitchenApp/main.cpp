@@ -1,5 +1,6 @@
 #include "WindowManager.h"
 #include "UIManager.h"
+#include "CookBook.h"
 
 const int WIDTH = 800;
 const int HEIGHT = 600;
@@ -34,6 +35,12 @@ int main()
 	ImGui_ImplOpenGL3_Init();
 
 	glEnable(GL_DEPTH_TEST);
+
+    std::string path = "productList.vic";
+
+    Organizer::ProductFactory prodFac;
+
+    prodFac.Load(Utilities::ParseProductFile(path.c_str()));
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -139,6 +146,7 @@ int main()
 
             ImGui::EndMenuBar();
         }
+        
 
         ImGui::End();
 

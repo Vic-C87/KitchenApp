@@ -2,13 +2,13 @@
 
 namespace Organizer
 {
-	Recipe::Recipe(std::string aName, int anID, int anAmountOfPorions, std::vector<Ingredient> someIngredient, std::vector<std::string> someInstruction, std::vector<std::string> someNotes)
+	Recipe::Recipe(std::string aName, int anID, int anAmountOfPorions, std::vector<Utilities::Ingredient> someIngredient, std::vector<std::string> someInstruction, std::vector<std::string> someNotes)
 	{
 	}
 	Recipe::~Recipe()
 	{
 	}
-	bool Recipe::AddIngredient(Ingredient aNewIngredient)
+	bool Recipe::AddIngredient(Utilities::Ingredient aNewIngredient)
 	{
 		return false;
 	}
@@ -24,7 +24,7 @@ namespace Organizer
 	{
 		return false;
 	}
-	bool Recipe::EditIngredients(std::vector<Ingredient> aNewIngredientsList)
+	bool Recipe::EditIngredients(std::vector<Utilities::Ingredient> aNewIngredientsList)
 	{
 		return false;
 	}
