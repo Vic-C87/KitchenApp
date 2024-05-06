@@ -9,7 +9,7 @@ namespace Organizer
 		ProductFactory();
 		~ProductFactory();
 
-		void Load(std::vector<Utilities::Product> someProducts);
+		void Load(const char* aPath);
 		bool Add(Utilities::Product aNewProduct);
 		const Utilities::Product* Search(const std::string aName) const;
 		const Utilities::Product* Search(const unsigned int anID) const;
@@ -18,8 +18,10 @@ namespace Organizer
 		bool Remove(const std::string aName);
 		bool Remove(unsigned int anID);
 
+		void SaveToFile(const char* aPath);
 
 	private:
 		std::vector<Utilities::Product> myProducts;
+		int myProductCount;
 	};
 }

@@ -3,22 +3,26 @@
 namespace Organizer
 {
 	ProductFactory::ProductFactory()
+		: myProductCount(0)
 	{
 	}
 
 	ProductFactory::~ProductFactory()
 	{
 	}
-	void ProductFactory::Load(std::vector<Utilities::Product> someProducts)
+	void ProductFactory::Load(const char* aPath)
 	{
-		for (int i = 0; i < someProducts.size(); i++)
+		std::vector<Utilities::Product> products = Utilities::ParseProductFile(aPath, myProductCount);
+
+		for (int i = 0; i < products.size(); i++)
 		{
-			myProducts.push_back(someProducts[i]);
+			myProducts.push_back(products[i]);
 		}
 	}
 	bool ProductFactory::Add(Utilities::Product aNewProduct)
 	{
 		myProducts.push_back(aNewProduct);
+		++myProductCount;
 		return true;
 	}
 	const Utilities::Product* ProductFactory::Search(const std::string aName) const
@@ -44,5 +48,9 @@ namespace Organizer
 	bool ProductFactory::Remove(unsigned int anID)
 	{
 		return false;
+	}
+	void ProductFactory::SaveToFile(const char* aPath)
+	{
+		Utilities::SaveProductsToFile(myProducts, myProductCount, aPath);
 	}
 }

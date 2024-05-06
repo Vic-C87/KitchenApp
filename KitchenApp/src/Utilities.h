@@ -11,7 +11,6 @@
 
 namespace Utilities
 {
-	static unsigned int ProductCount = 0;
 	enum class EMessurement
 	{
 		WeightKG,
@@ -92,7 +91,7 @@ namespace Utilities
 		return sourceCode;
 	}
 
-	inline std::vector<Product> ParseProductFile(const char* aPath)
+	inline std::vector<Product> ParseProductFile(const char* aPath, int& aProductCount)
 	{
 		std::vector<Product> products;
 		std::string line;
@@ -108,7 +107,7 @@ namespace Utilities
 
 		std::getline(fileStream, line);
 
-		ProductCount = static_cast<unsigned int>(std::stoul(line));
+		aProductCount = static_cast<unsigned int>(std::stoul(line));
 
 		std::getline(fileStream, line);
 		while (std::getline(fileStream, line))
@@ -134,5 +133,34 @@ namespace Utilities
 		}
 
 		return products;
+	}
+
+	inline void SaveProductsToFile(std::vector<Product> aProductList, unsigned int aProductCount,const char* aPath)
+	{
+		std::ofstream write;
+		write.open(aPath, std::ios::in | std::ios::trunc);
+		if (write.is_open())
+		{
+			write << aProductCount;
+			write << "\n***";
+			
+			for (int i = 0; i < aProductList.size(); i++)
+			{
+				write << "\n" + aProductList[i].Name + "\n";
+				write << aProductList[i].NameEnglish + "\n";
+				write << "R\n";
+				write << "KG\n";
+				write << aProductList[i].GramPerMessurement;
+				write << "\n";
+				write << aProductList[i].UniqueID;
+				write << "\n***";
+			}
+
+			write.close();
+		}
+		else
+		{
+			std::cout << "could not open file to save" << std::endl;
+		}
 	}
 }

@@ -40,7 +40,17 @@ int main()
 
     Organizer::ProductFactory prodFac;
 
-    prodFac.Load(Utilities::ParseProductFile(path.c_str()));
+    prodFac.Load(path.c_str());
+
+    std::string name = "Potatis";
+    std::string engName = "Potatoe";
+
+
+    Utilities::Product prod(name, engName, Utilities::EStorageType::DarkNCool, Utilities::EMessurement::WeightKG, 100, 3);
+
+    prodFac.Add(prod);
+
+    prodFac.SaveToFile(path.c_str());
 
 	while (!glfwWindowShouldClose(window))
 	{
