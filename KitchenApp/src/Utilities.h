@@ -62,6 +62,12 @@ namespace Utilities
 		Room
 	};
 
+	enum class EDisplayLanguage
+	{
+		Svenska,
+		English
+	};
+
 	struct Date
 	{
 		int Year;

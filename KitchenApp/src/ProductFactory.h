@@ -11,6 +11,7 @@ namespace Organizer
 
 		void Load(const char* aPath);
 		bool Add(Utilities::Product aNewProduct);
+		Utilities::Product* SearchByIndex(const int anIndex);
 		const Utilities::Product* Search(const std::string aName) const;
 		const Utilities::Product* Search(const unsigned int anID) const;
 		bool Modify(const std::string aNamedProductToChange, Utilities::Product aNewProduct);
@@ -22,10 +23,9 @@ namespace Organizer
 
 		int GetProductCount() const;
 
-		std::vector<Utilities::Product>& GetProductList();
-
 	private:
 		std::vector<Utilities::Product> myProducts;
 		int myProductCount;
+		Utilities::EDisplayLanguage myDisplayLanguage;
 	};
 }

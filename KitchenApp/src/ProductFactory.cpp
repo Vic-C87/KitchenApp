@@ -5,6 +5,7 @@ namespace Organizer
 	ProductFactory::ProductFactory()
 		: myProductCount(0)
 	{
+		myDisplayLanguage = Utilities::EDisplayLanguage::Svenska;
 	}
 
 	ProductFactory::~ProductFactory()
@@ -25,14 +26,54 @@ namespace Organizer
 		++myProductCount;
 		return true;
 	}
+	Utilities::Product* ProductFactory::SearchByIndex(const int anIndex)
+	{
+		if (anIndex < myProductCount)
+			return &myProducts[anIndex];
+		return nullptr;
+	}
 	const Utilities::Product* ProductFactory::Search(const std::string aName) const
 	{
+		switch (myDisplayLanguage)
+		{
+		case Utilities::EDisplayLanguage::Svenska:
+			for (int i = 0; i < myProductCount; i++)
+			{
+				if (aName.compare(myProducts[i].Name) == 0)
+				{
+					return &myProducts[i];
+				}
+			}
+			break;
+		case Utilities::EDisplayLanguage::English:
+			for (int i = 0; i < myProductCount; i++)
+			{
+				if (aName.compare(myProducts[i].NameEnglish) == 0)
+				{
+					return &myProducts[i];
+				}
+			}
+			break;
+		default:
+			break;
+		}
+		
 		return nullptr;
 	}
+
 	const Utilities::Product* ProductFactory::Search(const unsigned int anID) const
 	{
+		for (int i = 0; i < myProductCount; i++)
+		{
+			if (anID == myProducts[i].UniqueID)
+			{
+				return &myProducts[i];
+			}
+		}
+
 		return nullptr;
 	}
+
 	bool ProductFactory::Modify(const std::string aNamedProductToChange, Utilities::Product aNewProduct)
 	{
 		return false;
@@ -56,9 +97,5 @@ namespace Organizer
 	int ProductFactory::GetProductCount() const
 	{
 		return myProductCount;
-	}
-	std::vector<Utilities::Product>& ProductFactory::GetProductList()
-	{
-		return myProducts;
 	}
 }

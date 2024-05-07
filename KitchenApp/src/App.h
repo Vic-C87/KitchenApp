@@ -21,8 +21,6 @@ namespace Organizer
 		void ProductDetailsScreen(ImGuiIO& anIO, Utilities::Product& aProduct);
 
 	private:
-		float TEXT_BASE_HEIGHT;
-
 		int myWidth;
 		int myHeight;
 

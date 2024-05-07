@@ -78,8 +78,6 @@ namespace Organizer
 
 	void App::Update()
 	{
-		TEXT_BASE_HEIGHT = ImGui::GetTextLineHeightWithSpacing();
-
 		ImGuiIO& io = ImGui::GetIO();
 		int selectedProductIndex = 0;
 
@@ -116,7 +114,7 @@ namespace Organizer
 			case Utilities::EAppSecondState::None:
 				break;
 			case Utilities::EAppSecondState::ProductDetails:
-				ProductDetailsScreen(io, myProductFactory->GetProductList()[selectedProductIndex]);
+				ProductDetailsScreen(io, *myProductFactory->SearchByIndex(selectedProductIndex));
 				break;
 			case Utilities::EAppSecondState::CreateProduct:
 				CreateProductScreen(io);
@@ -261,13 +259,12 @@ namespace Organizer
 	{
 		if (ImGui::Begin("KitchenApp"))
 		{
-			//static int item_current_idx = 0; // Here we store our selection data as an index.
 			if (ImGui::BeginListBox("Products"))
 			{
 				for (int n = 0; n < myProductFactory->GetProductCount(); n++)
 				{
 					const bool is_selected = (aSelectedProductIndex == n);
-					if (ImGui::Selectable(myProductFactory->GetProductList()[n].Name.c_str(), is_selected))
+					if (ImGui::Selectable(myProductFactory->SearchByIndex(n)->Name.c_str(), is_selected))
 					{
 						aSelectedProductIndex = n;
 						mySecondState = Utilities::EAppSecondState::ProductDetails;
@@ -286,7 +283,6 @@ namespace Organizer
 
 	void App::CreateProductScreen(ImGuiIO& anIO)
 	{
-		//Remember to update local productList
 		static float f = 0.0f;
 		static int counter = 0;
 		bool shouldClose = false;
@@ -319,7 +315,6 @@ namespace Organizer
 	void App::ProductDetailsScreen(ImGuiIO& anIO, Utilities::Product& aProduct)
 	{
 		bool shouldClose = false;
-
 
 		if (ImGui::Begin("Details"))
 		{
