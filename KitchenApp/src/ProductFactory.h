@@ -20,6 +20,10 @@ namespace Organizer
 
 		void SaveToFile(const char* aPath);
 
+		int GetProductCount() const;
+
+		std::vector<Utilities::Product>& GetProductList();
+
 	private:
 		std::vector<Utilities::Product> myProducts;
 		int myProductCount;

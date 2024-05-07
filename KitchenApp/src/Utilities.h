@@ -1,16 +1,39 @@
 #pragma once
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
+
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
+
 #include <sstream>
 #include <fstream>
 #include <cassert>
 #include <iostream>
-#include "glad/glad.h"
-#include "GLFW/glfw3.h"
+
 #include <vector>
 #include <string>
-#include <iostream>
 
 namespace Utilities
 {
+	enum class EAppMainState
+	{
+		StartMenu,
+		CookBookSelection,
+		RecipeList,
+		ProductList
+	};
+
+	enum class EAppSecondState
+	{
+		None,
+		ProductDetails,
+		CreateProduct,
+		EditProduct,
+		CreateIngredient,
+		EditIngredient
+	};
+
 	enum class EMessurement
 	{
 		WeightKG,

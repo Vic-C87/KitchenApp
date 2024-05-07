@@ -157,13 +157,12 @@
     <ClCompile Include="Include\imgui\imgui_tables.cpp" />
     <ClCompile Include="Include\imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\App.cpp" />
     <ClCompile Include="src\CookBook.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\ProductFactory.cpp" />
     <ClCompile Include="src\Recipe.cpp" />
     <ClCompile Include="src\Storage.cpp" />
-    <ClCompile Include="src\UIManager.cpp" />
-    <ClCompile Include="src\WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\glad\glad.h" />
@@ -180,15 +179,14 @@
     <ClInclude Include="Include\imgui\imstb_textedit.h" />
     <ClInclude Include="Include\imgui\imstb_truetype.h" />
     <ClInclude Include="Include\KHR\khrplatform.h" />
+    <ClInclude Include="src\App.h" />
     <ClInclude Include="src\CookBook.h" />
     <ClInclude Include="src\Ingredient.h" />
     <ClInclude Include="src\ProductFactory.h" />
     <ClInclude Include="src\Recipe.h" />
     <ClInclude Include="src\stb_image.h" />
     <ClInclude Include="src\Storage.h" />
-    <ClInclude Include="src\UIManager.h" />
     <ClInclude Include="src\Utilities.h" />
-    <ClInclude Include="src\WindowManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\imgui\debuggers\imgui.natstepfilter" />

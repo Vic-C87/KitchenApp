@@ -53,4 +53,12 @@ namespace Organizer
 	{
 		Utilities::SaveProductsToFile(myProducts, myProductCount, aPath);
 	}
+	int ProductFactory::GetProductCount() const
+	{
+		return myProductCount;
+	}
+	std::vector<Utilities::Product>& ProductFactory::GetProductList()
+	{
+		return myProducts;
+	}
 }
