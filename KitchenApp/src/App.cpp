@@ -259,6 +259,10 @@ namespace Organizer
 	{
 		if (ImGui::Begin("KitchenApp"))
 		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			ImVec2 listBoxSize(style.FramePadding.x / 2, ImGui::GetContentRegionAvail().y * .5f);
+
+			ImGui::PushItemWidth(50);
 			if (ImGui::BeginListBox("Products"))
 			{
 				for (int n = 0; n < myProductFactory->GetProductCount(); n++)
