@@ -16,6 +16,7 @@ namespace Organizer
 	private:
 		void DockSpace(ImGuiIO& anIO);
 		void StartScreen(ImGuiIO& anIO);
+		void StorageScreen(ImGuiIO& anIO, int& aSelectedStorageIndex);
 		void ProductScreen(ImGuiIO& anIO, int& aSelectedProductIndex);
 		void CreateProductScreen(ImGuiIO& anIO);
 		void ProductDetailsScreen(ImGuiIO& anIO, Utilities::Product& aProduct);

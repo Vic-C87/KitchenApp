@@ -105,8 +105,6 @@ namespace Utilities
 		Product Type;
 		float Amount;
 		EUnitType Unit;
-		EStorageType Location;
-		Date BestBefore;
 	};
 
 	inline EStorageType GetEStorageType(const std::string aStorageTypeString)
@@ -201,6 +199,21 @@ namespace Utilities
 		shaderStream.close();
 
 		return sourceCode;
+	}
+
+	inline std::vector<Ingredient> ParseStorageFile(const char* aPath, int& aStorageCount)
+	{
+		std::vector<Ingredient> storage;
+		std::string line;
+
+		std::ifstream fileStream(aPath);
+
+		Product* product;
+		float amount;
+		EUnitType unitType;
+
+
+		return storage;
 	}
 
 	inline std::vector<Product> ParseProductFile(const char* aPath, int& aProductCount)

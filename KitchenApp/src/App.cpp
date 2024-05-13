@@ -256,12 +256,14 @@ namespace Organizer
 		}
 	}
 
+	void App::StorageScreen(ImGuiIO& anIO, int& aSelectedStorageIndex)
+	{
+	}
+
 	void App::ProductScreen(ImGuiIO& anIO, int& aSelectedProductIndex)
 	{
 		if (ImGui::Begin("Products"))
 		{
-			ImGuiStyle& style = ImGui::GetStyle();
-			ImVec2 listBoxSize(style.FramePadding.x / 2, ImGui::GetContentRegionAvail().y * .5f);
 			static bool language = myProductFactory->GetDisplayLanguage() == Utilities::EDisplayLanguage::English;
 			ImGui::Checkbox("English", &language);
 
