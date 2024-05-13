@@ -21,6 +21,8 @@ namespace Organizer
 
 		void SaveToFile(const char* aPath);
 
+		const Utilities::EDisplayLanguage GetDisplayLanguage() const;
+		void SetDisplayLanguage(Utilities::EDisplayLanguage aLanguagechoice);
 		int GetProductCount() const;
 
 	private:

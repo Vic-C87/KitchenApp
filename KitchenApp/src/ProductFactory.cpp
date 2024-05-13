@@ -22,6 +22,7 @@ namespace Organizer
 	}
 	bool ProductFactory::Add(Utilities::Product aNewProduct)
 	{
+		aNewProduct.UniqueID = myProductCount + 1;
 		myProducts.push_back(aNewProduct);
 		++myProductCount;
 		return true;
@@ -93,6 +94,14 @@ namespace Organizer
 	void ProductFactory::SaveToFile(const char* aPath)
 	{
 		Utilities::SaveProductsToFile(myProducts, myProductCount, aPath);
+	}
+	const Utilities::EDisplayLanguage ProductFactory::GetDisplayLanguage() const
+	{
+		return myDisplayLanguage;
+	}
+	void ProductFactory::SetDisplayLanguage(Utilities::EDisplayLanguage aLanguagechoice)
+	{
+		myDisplayLanguage = aLanguagechoice;
 	}
 	int ProductFactory::GetProductCount() const
 	{

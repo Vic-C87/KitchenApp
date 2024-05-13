@@ -4,10 +4,10 @@ namespace Organizer
 {
 	App::App()
 		: myProductFactory(nullptr), myWindow(nullptr),
-		myWidth(800), myHeight(600)
+		myWidth(1200), myHeight(720)
 	{
-		myMainState = Utilities::EAppMainState::ProductList;
-		mySecondState = Utilities::EAppSecondState::None;
+		mySecondState = Utilities::EAppSecondState::ProductList;
+		myThirdState = Utilities::EAppThirdState::None;
 	}
 
 	App::~App()
@@ -93,37 +93,37 @@ namespace Organizer
 
 			DockSpace(io);
 
-			switch (myMainState)
+			switch (mySecondState)
 			{
-			case Utilities::EAppMainState::StartMenu:
+			case Utilities::EAppSecondState::StartMenu:
 				StartScreen(io);
 				break;
-			case Utilities::EAppMainState::CookBookSelection:
+			case Utilities::EAppSecondState::CookBookSelection:
 				break;
-			case Utilities::EAppMainState::RecipeList:
+			case Utilities::EAppSecondState::RecipeList:
 				break;
-			case Utilities::EAppMainState::ProductList:
+			case Utilities::EAppSecondState::ProductList:
 				ProductScreen(io, selectedProductIndex);
 				break;
 			default:
 				break;
 			}
 
-			switch (mySecondState)
+			switch (myThirdState)
 			{
-			case Utilities::EAppSecondState::None:
+			case Utilities::EAppThirdState::None:
 				break;
-			case Utilities::EAppSecondState::ProductDetails:
+			case Utilities::EAppThirdState::ProductDetails:
 				ProductDetailsScreen(io, *myProductFactory->SearchByIndex(selectedProductIndex));
 				break;
-			case Utilities::EAppSecondState::CreateProduct:
+			case Utilities::EAppThirdState::CreateProduct:
 				CreateProductScreen(io);
 				break;
-			case Utilities::EAppSecondState::EditProduct:
+			case Utilities::EAppThirdState::EditProduct:
 				break;
-			case Utilities::EAppSecondState::CreateIngredient:
+			case Utilities::EAppThirdState::CreateIngredient:
 				break;
-			case Utilities::EAppSecondState::EditIngredient:
+			case Utilities::EAppThirdState::EditIngredient:
 				break;
 			default:
 				break;
@@ -143,6 +143,7 @@ namespace Organizer
 			glfwSwapBuffers(myWindow);
 
 		}
+		myProductFactory->SaveToFile("productList.vic");
 		glfwTerminate();
 	}
 
@@ -183,7 +184,7 @@ namespace Organizer
 		// any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
 		if (!opt_padding)
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin("DockSpace Demo", NULL, window_flags);
+		ImGui::Begin("MyDockSpace", NULL, window_flags);
 		if (!opt_padding)
 			ImGui::PopStyleVar();
 
@@ -257,28 +258,66 @@ namespace Organizer
 
 	void App::ProductScreen(ImGuiIO& anIO, int& aSelectedProductIndex)
 	{
-		if (ImGui::Begin("KitchenApp"))
+		if (ImGui::Begin("Products"))
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
 			ImVec2 listBoxSize(style.FramePadding.x / 2, ImGui::GetContentRegionAvail().y * .5f);
+			static bool language = myProductFactory->GetDisplayLanguage() == Utilities::EDisplayLanguage::English;
+			ImGui::Checkbox("English", &language);
 
-			ImGui::PushItemWidth(50);
+			if (language)
+			{
+				myProductFactory->SetDisplayLanguage(Utilities::EDisplayLanguage::English);
+			}
+			else
+			{
+				myProductFactory->SetDisplayLanguage(Utilities::EDisplayLanguage::Svenska);
+			}
+
+			ImGui::PushItemWidth(myWidth * 0.25f);
 			if (ImGui::BeginListBox("Products"))
 			{
-				for (int n = 0; n < myProductFactory->GetProductCount(); n++)
+				switch (myProductFactory->GetDisplayLanguage())
 				{
-					const bool is_selected = (aSelectedProductIndex == n);
-					if (ImGui::Selectable(myProductFactory->SearchByIndex(n)->Name.c_str(), is_selected))
+				case Utilities::EDisplayLanguage::Svenska:
+					for (int n = 0; n < myProductFactory->GetProductCount(); n++)
 					{
-						aSelectedProductIndex = n;
-						mySecondState = Utilities::EAppSecondState::ProductDetails;
-					}
+						const bool is_selected = (aSelectedProductIndex == n);
+						if (ImGui::Selectable(myProductFactory->SearchByIndex(n)->Name.c_str(), is_selected))
+						{
+							aSelectedProductIndex = n;
+							myThirdState = Utilities::EAppThirdState::ProductDetails;
+						}
 
-					// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-					if (is_selected)
-						ImGui::SetItemDefaultFocus();
+						// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+						if (is_selected)
+							ImGui::SetItemDefaultFocus();
+					}
+					break;
+				case Utilities::EDisplayLanguage::English:
+					for (int n = 0; n < myProductFactory->GetProductCount(); n++)
+					{
+						const bool is_selected = (aSelectedProductIndex == n);
+						if (ImGui::Selectable(myProductFactory->SearchByIndex(n)->NameEnglish.c_str(), is_selected))
+						{
+							aSelectedProductIndex = n;
+							myThirdState = Utilities::EAppThirdState::ProductDetails;
+						}
+
+						if (is_selected)
+							ImGui::SetItemDefaultFocus();
+					}
+					break;
+				default:
+					break;
 				}
+				
 				ImGui::EndListBox();
+			}
+
+			if (ImGui::Button("NEW"))
+			{
+				myThirdState = Utilities::EAppThirdState::CreateProduct;
 			}
 
 			ImGui::End();
@@ -289,19 +328,44 @@ namespace Organizer
 	{
 		static float f = 0.0f;
 		static int counter = 0;
+
 		bool shouldClose = false;
+		static char nameField[32] = "";
+		static char nameFieldEnglish[32] = "";
+		static int item_current_1 = -1;
+		const char* storageTypes[] = { "Freezer", "Refridgerator", "Dark n' Cool", "Room" };
+		static int item_current_2 = -1;
+		const char* messurementTypes[] = { "Weight", "Volume", "Piece" };
+		static int gramPerMessurement;
+
 
 		if (ImGui::Begin("Options"))
 		{
-			ImGui::SliderFloat("Position", &f, .0f, 1.0f);
+			ImGui::Text("Namn(Swe):\t\t\t"); ImGui::SameLine(); 
+			ImGui::InputText("namn", nameField, IM_ARRAYSIZE(nameField));
 
-			if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-				counter++;
+			ImGui::Text("Name(Eng):\t\t\t"); ImGui::SameLine();
+			ImGui::InputText("namnEng", nameFieldEnglish, IM_ARRAYSIZE(nameFieldEnglish));
+
+			ImGui::Text("Storage:  \t\t\t"); ImGui::SameLine();			
+			ImGui::Combo("Storage", &item_current_1, storageTypes, IM_ARRAYSIZE(storageTypes));
+
+			ImGui::Text("Messurement:  \t\t"); ImGui::SameLine();
+			ImGui::Combo("Messurement", &item_current_2, messurementTypes, IM_ARRAYSIZE(messurementTypes));
+
+			ImGui::Text("Gram per Messurement: "); ImGui::SameLine();
+			ImGui::InputInt("GperM", &gramPerMessurement);
+
+			if (ImGui::Button("Create"))
+			{
+				Utilities::EStorageType storage = Utilities::GetEStorageType(storageTypes[item_current_1]);
+				Utilities::EMessurement messurement = Utilities::GetEMessurementType(messurementTypes[item_current_2]);
+				Utilities::Product newProduct((std::string)nameField, (std::string)nameFieldEnglish, storage, messurement, gramPerMessurement, 0);
+				myProductFactory->Add(newProduct);
+				shouldClose = true;
+			}
+
 			ImGui::SameLine();
-			ImGui::Text("counter = %d", counter);
-
-			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / anIO.Framerate, anIO.Framerate);
-
 			if (ImGui::Button("Close"))
 			{
 				shouldClose = true;
@@ -311,7 +375,12 @@ namespace Organizer
 
 		if (shouldClose)
 		{
-			mySecondState = Utilities::EAppSecondState::None;
+			memset(nameField, 0, 32 * nameField[0]);
+			memset(nameFieldEnglish, 0, 32 * nameFieldEnglish[0]);
+			item_current_1 = -1;
+			item_current_2 = -1;
+			gramPerMessurement = 0;
+			myThirdState = Utilities::EAppThirdState::None;
 		}
 		
 	}
@@ -322,7 +391,26 @@ namespace Organizer
 
 		if (ImGui::Begin("Details"))
 		{
-			ImGui::Text(aProduct.Name.c_str());
+			switch (myProductFactory->GetDisplayLanguage())
+			{
+			case Utilities::EDisplayLanguage::Svenska:
+				ImGui::Text(aProduct.Name.c_str());
+				break;
+			case Utilities::EDisplayLanguage::English:
+				ImGui::Text(aProduct.NameEnglish.c_str());
+				break;
+			default:
+				break;
+			}
+			ImGui::Text("Stored in :"); ImGui::SameLine();
+			ImGui::Text(Utilities::GetStorageTypeString(aProduct.StandardLocation).c_str());
+			ImGui::Text("Standard messurement type:"); ImGui::SameLine();
+			ImGui::Text(Utilities::GetMessurementTypeString(aProduct.StandardMessurement).c_str());
+			ImGui::Text("Weight(gram) per messurement unit:"); ImGui::SameLine();
+			ImGui::Text(std::to_string(aProduct.GramPerMessurement).c_str());
+			ImGui::Text("Product ID:"); ImGui::SameLine();
+			ImGui::Text(std::to_string(aProduct.UniqueID).c_str());
+
 
 			if (ImGui::Button("Close"))
 			{
@@ -334,7 +422,7 @@ namespace Organizer
 
 		if (shouldClose)
 		{
-			mySecondState = Utilities::EAppSecondState::None;
+			myThirdState = Utilities::EAppThirdState::None;
 		}
 	}
 

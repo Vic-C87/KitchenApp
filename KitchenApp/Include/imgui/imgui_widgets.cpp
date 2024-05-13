@@ -1747,7 +1747,7 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, ImGuiComboF
         RenderTextClipped(bb.Min + style.FramePadding, ImVec2(value_x2, bb.Max.y), preview_value, NULL, NULL);
     }
     if (label_size.x > 0)
-        RenderText(ImVec2(bb.Max.x + style.ItemInnerSpacing.x, bb.Min.y + style.FramePadding.y), label);
+        //RenderText(ImVec2(bb.Max.x + style.ItemInnerSpacing.x, bb.Min.y + style.FramePadding.y), label);
 
     if (!popup_open)
         return false;
@@ -3496,7 +3496,7 @@ bool ImGui::InputScalar(const char* label, ImGuiDataType data_type, void* p_data
         IMGUI_TEST_ENGINE_ITEM_INFO(g.LastItemData.ID, label, g.LastItemData.StatusFlags | ImGuiItemStatusFlags_Inputable);
 
         // Step buttons
-        const ImVec2 backup_frame_padding = style.FramePadding;
+        /*const ImVec2 backup_frame_padding = style.FramePadding;
         style.FramePadding.x = style.FramePadding.y;
         ImGuiButtonFlags button_flags = ImGuiButtonFlags_Repeat | ImGuiButtonFlags_DontClosePopups;
         if (flags & ImGuiInputTextFlags_ReadOnly)
@@ -3507,7 +3507,7 @@ bool ImGui::InputScalar(const char* label, ImGuiDataType data_type, void* p_data
             DataTypeApplyOp(data_type, '-', p_data, p_data, g.IO.KeyCtrl && p_step_fast ? p_step_fast : p_step);
             value_changed = true;
         }
-        SameLine(0, style.ItemInnerSpacing.x);
+        SameLine(0, style.ItemInnerSpacing.x); 
         if (ButtonEx("+", ImVec2(button_size, button_size), button_flags))
         {
             DataTypeApplyOp(data_type, '+', p_data, p_data, g.IO.KeyCtrl && p_step_fast ? p_step_fast : p_step);
@@ -3522,7 +3522,7 @@ bool ImGui::InputScalar(const char* label, ImGuiDataType data_type, void* p_data
             SameLine(0, style.ItemInnerSpacing.x);
             TextEx(label, label_end);
         }
-        style.FramePadding = backup_frame_padding;
+        style.FramePadding = backup_frame_padding;*/
 
         PopID();
         EndGroup();
@@ -6928,13 +6928,13 @@ bool ImGui::BeginListBox(const char* label, const ImVec2& size_arg)
     }
 
     // FIXME-OPT: We could omit the BeginGroup() if label_size.x == 0.0f but would need to omit the EndGroup() as well.
-    BeginGroup();
-    if (label_size.x > 0.0f)
-    {
-        ImVec2 label_pos = ImVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y);
-        RenderText(label_pos, label);
-        window->DC.CursorMaxPos = ImMax(window->DC.CursorMaxPos, label_pos + label_size);
-    }
+    //BeginGroup();
+    //if (label_size.x > 0.0f)
+    //{
+    //    //ImVec2 label_pos = ImVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y);
+    //    //RenderText(label_pos, label);
+    //    //window->DC.CursorMaxPos = ImMax(window->DC.CursorMaxPos, label_pos + label_size);
+    //}
 
     BeginChild(id, frame_bb.GetSize(), ImGuiChildFlags_FrameStyle);
     return true;
@@ -6948,7 +6948,7 @@ void ImGui::EndListBox()
     IM_UNUSED(window);
 
     EndChild();
-    EndGroup(); // This is only required to be able to do IsItemXXX query on the whole ListBox including label
+    //EndGroup(); // This is only required to be able to do IsItemXXX query on the whole ListBox including label
 }
 
 bool ImGui::ListBox(const char* label, int* current_item, const char* const items[], int items_count, int height_items)

@@ -13,10 +13,16 @@
 
 #include <vector>
 #include <string>
+#include <string.h>
 
 namespace Utilities
 {
 	enum class EAppMainState
+	{
+
+	};
+
+	enum class EAppSecondState
 	{
 		StartMenu,
 		CookBookSelection,
@@ -24,7 +30,7 @@ namespace Utilities
 		ProductList
 	};
 
-	enum class EAppSecondState
+	enum class EAppThirdState
 	{
 		None,
 		ProductDetails,
@@ -103,6 +109,83 @@ namespace Utilities
 		Date BestBefore;
 	};
 
+	inline EStorageType GetEStorageType(const std::string aStorageTypeString)
+	{
+		if (aStorageTypeString.compare("Freezer") == 0)
+		{
+			return EStorageType::Freezer;
+		}
+		else if (aStorageTypeString.compare("Refridgerator") == 0)
+		{
+			return EStorageType::Refridgerator;
+		}
+		else if (aStorageTypeString.compare("Dark n' Cool") == 0)
+		{
+			return EStorageType::DarkNCool;
+		}
+		else
+		{
+			return EStorageType::Room;
+		}
+	}
+
+	inline std::string GetStorageTypeString(const EStorageType aStorageType)
+	{
+		switch (aStorageType)
+		{
+		case EStorageType::Freezer:
+			return "Freezer";
+			break;
+		case EStorageType::Refridgerator:
+			return "Refridgerator";
+			break;
+		case EStorageType::DarkNCool:
+			return "Dark n' Cool";
+			break;
+		case EStorageType::Room:
+			return "Room";
+			break;
+		default:
+			return "Room";
+			break;
+		}
+	}
+
+	inline EMessurement GetEMessurementType(const std::string aMessurementTypeString)
+	{
+		if (aMessurementTypeString.compare("Weight") == 0)
+		{
+			return EMessurement::WeightKG;
+		}
+		else if (aMessurementTypeString.compare("Volume") == 0)
+		{
+			return EMessurement::VolumeLiter;
+		}
+		else
+		{
+			return EMessurement::PieceOne;
+		}
+	}
+
+	inline std::string GetMessurementTypeString(const EMessurement aMessurementType)
+	{
+		switch (aMessurementType)
+		{
+		case EMessurement::WeightKG:
+			return "Weight";
+			break;
+		case EMessurement::VolumeLiter:
+			return "Volume";
+			break;
+		case EMessurement::PieceOne:
+			return "Piece";
+			break;
+		default:
+			return "Piece";
+			break;
+		}
+	}
+
 	inline std::string ParseFile(const char* aPath)
 	{
 		std::string sourceCode;
@@ -145,9 +228,9 @@ namespace Utilities
 			std::getline(fileStream, line);
 			engName = line;
 			std::getline(fileStream, line);
-			storageType = EStorageType::Room;//FIX
+			storageType = GetEStorageType(line);			//EStorageType::Room;//FIX
 			std::getline(fileStream, line);
-			messurementType = EMessurement::WeightKG;
+			messurementType = GetEMessurementType(line);	//EMessurement::WeightKG;
 			std::getline(fileStream, line);
 			std::stringstream ss;
 			ss << line;
@@ -177,8 +260,8 @@ namespace Utilities
 			{
 				write << "\n" + aProductList[i].Name + "\n";
 				write << aProductList[i].NameEnglish + "\n";
-				write << "R\n";
-				write << "KG\n";
+				write << GetStorageTypeString(aProductList[i].StandardLocation) + "\n";
+				write << GetMessurementTypeString(aProductList[i].StandardMessurement) + "\n";
 				write << aProductList[i].GramPerMessurement;
 				write << "\n";
 				write << aProductList[i].UniqueID;

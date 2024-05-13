@@ -27,8 +27,8 @@ namespace Organizer
 		ProductFactory* myProductFactory;
 		GLFWwindow* myWindow;
 
-		Utilities::EAppMainState myMainState;
 		Utilities::EAppSecondState mySecondState;
+		Utilities::EAppThirdState myThirdState;
 	
 	private:
 		static void CBKeyInput(GLFWwindow* aWindow, int aKey, int aScancode, int anAction, int aMode);

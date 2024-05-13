@@ -1,23 +1,58 @@
-3
+8
 ***
 Lök
 Onion
-R
-KG
+Room
+Weight
 200
 1
 ***
 Morot
 Carrot
-R
-KG
+Room
+Weight
 150
 2
 ***
 Potatis
 Potatoe
-R
-KG
+Room
+Weight
 100
 3
+***
+Äpple
+Apple
+Room
+Weight
+150
+4
+***
+Paprika grön
+Bell Pepper green
+Refridgerator
+Piece
+200
+5
+***
+Paprika röd
+Bell pepper red
+Refridgerator
+Weight
+200
+6
+***
+Paprika gul
+Bell pepper yellow
+Refridgerator
+Weight
+200
+7
+***
+Mjölk
+Milk
+Refridgerator
+Volume
+1000
+8
 ***
