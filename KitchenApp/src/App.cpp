@@ -3,16 +3,14 @@
 namespace Organizer
 {
 	App::App()
-		: myProductFactory(nullptr), myWindow(nullptr),
-		myWidth(1200), myHeight(720)
+		: myWindowDimensions(1200, 720), myProductFactory(nullptr), myWindow(nullptr), myState()
 	{
-		mySecondState = Utilities::EAppSecondState::ProductList;
-		myThirdState = Utilities::EAppThirdState::None;
+		myProductFactory = std::make_shared<ProductFactory>();
+		myCookBook = std::make_unique<CookBook>(myProductFactory);
 	}
 
 	App::~App()
 	{
-		delete myProductFactory;
 	}
 
 	bool App::Initialize()
@@ -22,8 +20,10 @@ namespace Organizer
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+		glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+		glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
 
-		myWindow = glfwCreateWindow(myWidth, myHeight, "Kitchen APP", NULL, NULL);
+		myWindow = glfwCreateWindow(myWindowDimensions.Width, myWindowDimensions.Height, "Kitchen APP", NULL, NULL);
 		glfwMakeContextCurrent(myWindow);
 
 		if (myWindow == NULL)
@@ -41,7 +41,7 @@ namespace Organizer
 
 		}
 
-		glViewport(0, 0, myWidth, myHeight);
+		glViewport(0, 0, myWindowDimensions.Width, myWindowDimensions.Height);
 
 		//register callbacks
 		glfwSetKeyCallback(myWindow, CBKeyInput);
@@ -70,16 +70,14 @@ namespace Organizer
 
 		glEnable(GL_DEPTH_TEST);
 
-		myProductFactory = new ProductFactory();
 		myProductFactory->Load("productList.vic");
-
+		myCookBook->Load("recipeList.vic");
 		return true;
 	}
 
 	void App::Update()
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		int selectedProductIndex = 0;
 
 		while (!glfwWindowShouldClose(myWindow))
 		{
@@ -93,41 +91,7 @@ namespace Organizer
 
 			DockSpace(io);
 
-			switch (mySecondState)
-			{
-			case Utilities::EAppSecondState::StartMenu:
-				StartScreen(io);
-				break;
-			case Utilities::EAppSecondState::CookBookSelection:
-				break;
-			case Utilities::EAppSecondState::RecipeList:
-				break;
-			case Utilities::EAppSecondState::ProductList:
-				ProductScreen(io, selectedProductIndex);
-				break;
-			default:
-				break;
-			}
-
-			switch (myThirdState)
-			{
-			case Utilities::EAppThirdState::None:
-				break;
-			case Utilities::EAppThirdState::ProductDetails:
-				ProductDetailsScreen(io, *myProductFactory->SearchByIndex(selectedProductIndex));
-				break;
-			case Utilities::EAppThirdState::CreateProduct:
-				CreateProductScreen(io);
-				break;
-			case Utilities::EAppThirdState::EditProduct:
-				break;
-			case Utilities::EAppThirdState::CreateIngredient:
-				break;
-			case Utilities::EAppThirdState::EditIngredient:
-				break;
-			default:
-				break;
-			}
+			CheckState(io);
 
 			ImGui::Render();
 
@@ -144,12 +108,13 @@ namespace Organizer
 
 		}
 		myProductFactory->SaveToFile("productList.vic");
+		myCookBook->SaveToFile("recipeList.vic");
 		glfwTerminate();
 	}
 
 	void App::DockSpace(ImGuiIO& anIO)
 	{
-		static bool opt_fullscreen = true;
+		static bool opt_fullscreen = false;
 		static bool opt_padding = false;
 		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
@@ -218,7 +183,6 @@ namespace Organizer
 				if (ImGui::MenuItem("Flag: NoResize", "", (dockspace_flags & ImGuiDockNodeFlags_NoResize) != 0)) { dockspace_flags ^= ImGuiDockNodeFlags_NoResize; }
 				if (ImGui::MenuItem("Flag: AutoHideTabBar", "", (dockspace_flags & ImGuiDockNodeFlags_AutoHideTabBar) != 0)) { dockspace_flags ^= ImGuiDockNodeFlags_AutoHideTabBar; }
 				if (ImGui::MenuItem("Flag: PassthruCentralNode", "", (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode) != 0, opt_fullscreen)) { dockspace_flags ^= ImGuiDockNodeFlags_PassthruCentralNode; }
-				ImGui::Separator();
 
 				ImGui::EndMenu();
 			}
@@ -249,184 +213,83 @@ namespace Organizer
 	{
 		if (ImGui::Begin("KitchenApp"))
 		{
-			ImGui::Text("Test!");
+			ImGui::Text("Welcome!");
 
-			ImGui::End();
+			if (ImGui::Button("Products"))
+			{
+				myState.SetState(Utilities::EAppStates::StartMenu, false);
+				myState.SetState(Utilities::EAppStates::ProductList, true);
+			}
+
+			if (ImGui::Button("Cook Book"))
+			{
+				myState.SetState(Utilities::EAppStates::StartMenu, false);
+				myState.SetState(Utilities::EAppStates::CookBook, true);
+			}
+
+			ImGui::Separator();
+
+			if (ImGui::Button("Quit"))
+			{
+				glfwSetWindowShouldClose(myWindow, GL_TRUE);
+			}
 
 		}
+		ImGui::End();
 	}
 
-	void App::StorageScreen(ImGuiIO& anIO, int& aSelectedStorageIndex)
+	void App::CheckState(ImGuiIO& anIO)
 	{
+		std::vector<Utilities::EAppStates> activeStates = myState.GetActiveStates();
+
+		for (auto state : activeStates)
+		{
+			ExecuteState(anIO, state);
+		}
 	}
 
-	void App::ProductScreen(ImGuiIO& anIO, int& aSelectedProductIndex)
+	void App::ExecuteState(ImGuiIO& anIO, Utilities::EAppStates aStateToExecute)
 	{
-		if (ImGui::Begin("Products"))
+		switch (aStateToExecute)
 		{
-			static bool language = myProductFactory->GetDisplayLanguage() == Utilities::EDisplayLanguage::English;
-			ImGui::Checkbox("English", &language);
-
-			if (language)
-			{
-				myProductFactory->SetDisplayLanguage(Utilities::EDisplayLanguage::English);
-			}
-			else
-			{
-				myProductFactory->SetDisplayLanguage(Utilities::EDisplayLanguage::Svenska);
-			}
-
-			ImGui::PushItemWidth(myWidth * 0.25f);
-			if (ImGui::BeginListBox("Products"))
-			{
-				switch (myProductFactory->GetDisplayLanguage())
-				{
-				case Utilities::EDisplayLanguage::Svenska:
-					for (int n = 0; n < myProductFactory->GetProductCount(); n++)
-					{
-						const bool is_selected = (aSelectedProductIndex == n);
-						if (ImGui::Selectable(myProductFactory->SearchByIndex(n)->Name.c_str(), is_selected))
-						{
-							aSelectedProductIndex = n;
-							myThirdState = Utilities::EAppThirdState::ProductDetails;
-						}
-
-						// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-						if (is_selected)
-							ImGui::SetItemDefaultFocus();
-					}
-					break;
-				case Utilities::EDisplayLanguage::English:
-					for (int n = 0; n < myProductFactory->GetProductCount(); n++)
-					{
-						const bool is_selected = (aSelectedProductIndex == n);
-						if (ImGui::Selectable(myProductFactory->SearchByIndex(n)->NameEnglish.c_str(), is_selected))
-						{
-							aSelectedProductIndex = n;
-							myThirdState = Utilities::EAppThirdState::ProductDetails;
-						}
-
-						if (is_selected)
-							ImGui::SetItemDefaultFocus();
-					}
-					break;
-				default:
-					break;
-				}
-				
-				ImGui::EndListBox();
-			}
-
-			if (ImGui::Button("NEW"))
-			{
-				myThirdState = Utilities::EAppThirdState::CreateProduct;
-			}
-
-			ImGui::End();
+		case Utilities::EAppStates::None:
+			break;
+		case Utilities::EAppStates::StartMenu:
+			StartScreen(anIO);
+			break;
+		case Utilities::EAppStates::CookBook:
+			myCookBook->CookBookStartWindow(anIO, myState);
+			break;
+		case Utilities::EAppStates::RecipeList:
+			myCookBook->DisplayRecipesWindow(anIO, mySelectedRecipeIndex, myWindowDimensions, myState);
+			break;
+		case Utilities::EAppStates::ProductList:
+			myProductFactory->DisplayProductWindow(anIO, mySelectedProductIndex, myWindowDimensions, myState);
+			break;
+		case Utilities::EAppStates::ProductDetails:
+			myProductFactory->ProductDetailsWindow(anIO, mySelectedProductIndex, myState);
+			break;
+		case Utilities::EAppStates::CreateProduct:
+			myProductFactory->CreateProductWindow(anIO, myState);
+			break;
+		case Utilities::EAppStates::EditProduct:
+			myProductFactory->EditProductWindow(anIO, myState);
+			break;
+		case Utilities::EAppStates::RecipeDetails:
+			myCookBook->RecipeDetailsWindow(anIO, mySelectedRecipeIndex, myState);
+			break;
+		case Utilities::EAppStates::CreateRecipe:
+			myCookBook->CreateRecipeWindow(anIO, myWindowDimensions, myState);
+			break;
+		case Utilities::EAppStates::EditRecipe:
+			myCookBook->EditRecipe(anIO, myState);
+			break;
+		default:
+			break;
 		}
 	}
 
-	void App::CreateProductScreen(ImGuiIO& anIO)
-	{
-		static float f = 0.0f;
-		static int counter = 0;
-
-		bool shouldClose = false;
-		static char nameField[32] = "";
-		static char nameFieldEnglish[32] = "";
-		static int item_current_1 = -1;
-		const char* storageTypes[] = { "Freezer", "Refridgerator", "Dark n' Cool", "Room" };
-		static int item_current_2 = -1;
-		const char* messurementTypes[] = { "Weight", "Volume", "Piece" };
-		static int gramPerMessurement;
-
-
-		if (ImGui::Begin("Options"))
-		{
-			ImGui::Text("Namn(Swe):\t\t\t"); ImGui::SameLine(); 
-			ImGui::InputText("namn", nameField, IM_ARRAYSIZE(nameField));
-
-			ImGui::Text("Name(Eng):\t\t\t"); ImGui::SameLine();
-			ImGui::InputText("namnEng", nameFieldEnglish, IM_ARRAYSIZE(nameFieldEnglish));
-
-			ImGui::Text("Storage:  \t\t\t"); ImGui::SameLine();			
-			ImGui::Combo("Storage", &item_current_1, storageTypes, IM_ARRAYSIZE(storageTypes));
-
-			ImGui::Text("Messurement:  \t\t"); ImGui::SameLine();
-			ImGui::Combo("Messurement", &item_current_2, messurementTypes, IM_ARRAYSIZE(messurementTypes));
-
-			ImGui::Text("Gram per Messurement: "); ImGui::SameLine();
-			ImGui::InputInt("GperM", &gramPerMessurement);
-
-			if (ImGui::Button("Create"))
-			{
-				Utilities::EStorageType storage = Utilities::GetEStorageType(storageTypes[item_current_1]);
-				Utilities::EMessurement messurement = Utilities::GetEMessurementType(messurementTypes[item_current_2]);
-				Utilities::Product newProduct((std::string)nameField, (std::string)nameFieldEnglish, storage, messurement, gramPerMessurement, 0);
-				myProductFactory->Add(newProduct);
-				shouldClose = true;
-			}
-
-			ImGui::SameLine();
-			if (ImGui::Button("Close"))
-			{
-				shouldClose = true;
-			}
-			ImGui::End();
-		}
-
-		if (shouldClose)
-		{
-			memset(nameField, 0, 32 * nameField[0]);
-			memset(nameFieldEnglish, 0, 32 * nameFieldEnglish[0]);
-			item_current_1 = -1;
-			item_current_2 = -1;
-			gramPerMessurement = 0;
-			myThirdState = Utilities::EAppThirdState::None;
-		}
-		
-	}
-
-	void App::ProductDetailsScreen(ImGuiIO& anIO, Utilities::Product& aProduct)
-	{
-		bool shouldClose = false;
-
-		if (ImGui::Begin("Details"))
-		{
-			switch (myProductFactory->GetDisplayLanguage())
-			{
-			case Utilities::EDisplayLanguage::Svenska:
-				ImGui::Text(aProduct.Name.c_str());
-				break;
-			case Utilities::EDisplayLanguage::English:
-				ImGui::Text(aProduct.NameEnglish.c_str());
-				break;
-			default:
-				break;
-			}
-			ImGui::Text("Stored in :"); ImGui::SameLine();
-			ImGui::Text(Utilities::GetStorageTypeString(aProduct.StandardLocation).c_str());
-			ImGui::Text("Standard messurement type:"); ImGui::SameLine();
-			ImGui::Text(Utilities::GetMessurementTypeString(aProduct.StandardMessurement).c_str());
-			ImGui::Text("Weight(gram) per messurement unit:"); ImGui::SameLine();
-			ImGui::Text(std::to_string(aProduct.GramPerMessurement).c_str());
-			ImGui::Text("Product ID:"); ImGui::SameLine();
-			ImGui::Text(std::to_string(aProduct.UniqueID).c_str());
-
-
-			if (ImGui::Button("Close"))
-			{
-				shouldClose = true;
-			}
-
-			ImGui::End();
-		}
-
-		if (shouldClose)
-		{
-			myThirdState = Utilities::EAppThirdState::None;
-		}
-	}
+#pragma region Callbacks
 
 	void App::CBKeyInput(GLFWwindow* aWindow, int aKey, int aScancode, int anAction, int aMode)
 	{
@@ -446,4 +309,8 @@ namespace Organizer
 			std::cout << "Path: " << somePaths[i] << std::endl;
 		}
 	}
+
+#pragma endregion
+
+
 }

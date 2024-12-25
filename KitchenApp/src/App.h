@@ -1,5 +1,4 @@
-#pragma once
-#include "Utilities.h";
+ #pragma once
 #include "CookBook.h"
 
 namespace Organizer
@@ -16,20 +15,20 @@ namespace Organizer
 	private:
 		void DockSpace(ImGuiIO& anIO);
 		void StartScreen(ImGuiIO& anIO);
-		void StorageScreen(ImGuiIO& anIO, int& aSelectedStorageIndex);
-		void ProductScreen(ImGuiIO& anIO, int& aSelectedProductIndex);
-		void CreateProductScreen(ImGuiIO& anIO);
-		void ProductDetailsScreen(ImGuiIO& anIO, Utilities::Product& aProduct);
+		void CheckState(ImGuiIO& anIO);
+		void ExecuteState(ImGuiIO& anIO, Utilities::EAppStates aStateToExecute);
 
 	private:
-		int myWidth;
-		int myHeight;
-
-		ProductFactory* myProductFactory;
+		Utilities::WindowDimensions myWindowDimensions;
+		std::shared_ptr<ProductFactory> myProductFactory;
+		std::unique_ptr<CookBook> myCookBook;
 		GLFWwindow* myWindow;
 
-		Utilities::EAppSecondState mySecondState;
-		Utilities::EAppThirdState myThirdState;
+		Utilities::State myState;
+
+		int mySelectedProductIndex = 0;
+		int mySelectedRecipeIndex = 0;
+
 	
 	private:
 		static void CBKeyInput(GLFWwindow* aWindow, int aKey, int aScancode, int anAction, int aMode);
